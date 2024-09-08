@@ -1,13 +1,21 @@
 package controllers
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"fmt"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 type Request struct {
-	Id          string `json: "id"`
-	environment string `json:"environment"`
+	Id          string `json:"id"`
+	Environment string `json:"environment"`
 }
 
-func createrepl(c *fiber.Ctx) error {
+type Response struct {
+	Url string `json:"url"`
+}
+
+func (k *Kconfig) Createrepl(c *fiber.Ctx) error {
 
 	var request Request
 
@@ -17,6 +25,15 @@ func createrepl(c *fiber.Ctx) error {
 		return err
 	}
 
-	return nil
+	url, err := k.createResources(request.Id, request.Environment, "default")
+
+	if err != nil {
+		fmt.Printf("error while creating resources: %s\n", err.Error())
+		return err
+	}
+
+	return c.JSON(Response{
+		Url: url,
+	})
 
 }
